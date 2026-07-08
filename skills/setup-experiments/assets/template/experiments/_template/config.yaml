@@ -1,0 +1,15 @@
+# Experiment expXNN: <one-line summary>
+# Override ONLY what this experiment needs; sensible defaults live in src/ (the schema).
+name: <short_name>
+
+# --- which {{group}} this belongs to (drives the results/ mirror path) ---
+group: X                 # {{group}} letter, e.g. A
+group_name: <name>       # {{group}} folder name, e.g. numerics  -> results/{{group}}_A_numerics/
+
+# --- core knobs (replace with this project's parameters) ---
+# example_param: 1.0
+# seeds: [0, 1, 2]
+
+# --- sweeps (lists the run.py expands over) ---
+# widths: [32, 64, 128]
+# targets: [case_a, case_b]

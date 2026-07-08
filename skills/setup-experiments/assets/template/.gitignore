@@ -1,0 +1,22 @@
+# results/ is data + figures by default — DON'T track them.
+results/**
+# ...but DO keep the human-authored writeups and the global summary tracked.
+!results/**/
+!results/**/*_results.md
+!results/results.md
+# To pin a specific artifact (e.g. one notebook), add an explicit negation here, e.g.:
+# !results/{{group}}_X_name/expXNN_name/some_figure.ipynb
+
+# Source material in papers/ is tracked by default (agents read it). If a source is a large
+# binary you'd rather not commit, ignore it explicitly here.
+data/
+
+# Standard junk.
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.DS_Store
+*.ipynb_checkpoints/
+.ipynb_checkpoints/
+checkpoints/

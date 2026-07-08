@@ -1,0 +1,21 @@
+# Whitelist strategy: ignore everything, then un-ignore the portable config.
+# Anything not listed below NEVER syncs (sessions, caches, credentials, plugins, projects).
+/*
+!/.gitignore
+!/README.md
+!/CLAUDE.md
+!/settings.json
+!/keybindings.json
+!/statusline-command.sh
+!/skills/
+!/agents/
+!/commands/
+!/hooks/
+
+# Never sync these even if nested under whitelisted dirs
+**/.DS_Store
+**/*.local.*
+**/node_modules/
+
+# dl-trainer is its own repo (samlayton99/dl-trainer) — bootstrap clones it here
+/skills/dl-trainer/

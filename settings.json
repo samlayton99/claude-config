@@ -1,0 +1,83 @@
+{
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(git:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(docker:*)",
+      "Bash(~/.claude/scripts/sessions.sh:*)",
+      "Bash(bash /Users/samlayton/.claude/skills/update-repos/scripts/update-repos.sh:*)",
+      "Bash(bash /Users/samlayton/.claude/skills/update-index/scripts/discover.sh:*)",
+      "Bash(bash /Users/samlayton/.claude/skills/update-index/scripts/collect-signals.sh:*)",
+      "Bash(bash /Users/samlayton/.claude/skills/update-index/scripts/assemble-index.sh:*)",
+      "Bash(~/.venvs/*/bin/python -m pytest:*)",
+      "Bash(~/.venvs/text-triage/bin/python -m pytest:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Bash(curl:*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "claude-fable-5[1m]",
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/samlayton/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "tui": "default",
+  "theme": "light",
+  "preferredNotifChannel": "auto",
+  "switchModelsOnFlag": false,
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-start-pull.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-end-push.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
