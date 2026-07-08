@@ -1,0 +1,3 @@
+# Put raw datasets here (e.g. data/raw/train.npz). Load them in
+# data/dataloader.py:build_datasets(). Large files should be gitignored;
+# this .gitkeep just keeps the empty folder in version control.

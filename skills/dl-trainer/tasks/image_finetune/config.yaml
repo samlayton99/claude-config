@@ -1,0 +1,33 @@
+# Image classification finetuning from a pretrained backbone.
+_recipe:
+  summary: "ConvNeXt/ViT finetune from timm/HF pretrained weights (~30 epochs)"
+  source: "arxiv.org/abs/2201.03545 (appendix) ; timm finetune configs"
+  last_verified: 2026-06-25
+  adoption: "timm ~37k*; standard transfer recipe"
+  extra: vision
+  todo:
+    - "Load pretrained: timm.create_model('convnext_base.fb_in22k_ft_in1k', pretrained=True, num_classes=N)."
+    - "Apply LLRD ~0.8 (the key finetune knob) via a build_optimizer override in experiment.py — timm: create_optimizer_v2(model, 'adamw', lr=5e-5, weight_decay=0.05, layer_decay=0.8)."
+    - "Lower/zero drop-path; keep label smoothing 0.1; EMA on (train.ema_decay); optionally finetune at 384."
+
+model:
+  name: convnext_base.fb_in22k_ft_in1k   # the actual pretrained tag (bare 'convnext_base' = a different checkpoint)
+  resolution: 224
+  num_classes: 1000     # set to your number of classes
+optim:
+  optimizer: adamw
+  lr: 5.0e-5            # ~100x lower than from-scratch
+  weight_decay: 0.05
+  betas: [0.9, 0.999]
+scheduler:
+  name: cosine_warmup
+  warmup_steps: 100     # optimizer steps (~first few % of finetuning)
+  min_lr: 1.0e-6
+train:
+  epochs: 30
+  amp: true
+  amp_dtype: bfloat16
+  ema_decay: 0.9999     # weight EMA (now supported by core/train.py); eval/checkpoint use it
+loss:
+  name: cross_entropy
+  label_smoothing: 0.1

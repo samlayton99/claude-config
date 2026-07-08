@@ -1,0 +1,34 @@
+# Scientific ML — Fourier Neural Operator (data-driven PDE surrogate).
+_recipe:
+  summary: "FNO operator learning (neuraloperator library)"
+  source: "github.com/neuraloperator/neuraloperator ; Li et al. ICLR 2021"
+  last_verified: 2026-06-25
+  adoption: "neuraloperator ~3.7k* (Caltech/NVIDIA); FNO paper ~3.25k citations"
+  extra: sciml
+  todo:
+    - "Use the neuraloperator library FNO, not this scaffold's MLP."
+    - "1D (Burgers): n_modes=32, hidden_channels=64, 4 layers, batch 256."
+    - "2D Navier-Stokes: n_modes=16/dim, hidden_channels=32, 2 layers, batch 24."
+    - "Data-driven (needs solved input-output field pairs); train in float32."
+    - "Loss: relative L2. FNO is resolution-invariant (respect Nyquist for modes)."
+
+model:
+  name: fno
+  n_modes: [64, 64]
+  hidden_channels: 64
+  n_layers: 4
+optim:
+  optimizer: adam
+  lr: 3.0e-4
+  weight_decay: 0.0
+  betas: [0.9, 0.999]
+scheduler:
+  name: plateau         # ReduceLROnPlateau, factor 0.5, patience ~10
+  min_lr: 1.0e-4
+data:
+  batch_size: 256
+train:
+  epochs: 500
+  amp: false            # fp32; FNO does not need fp64
+loss:
+  name: l1              # placeholder; use relative-L2 in practice

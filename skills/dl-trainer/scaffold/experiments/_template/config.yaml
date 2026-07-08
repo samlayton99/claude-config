@@ -1,0 +1,80 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# config.yaml — the knobs for ONE experiment. Copy experiments/_template to start.
+# Everything that changes between experiments lives here, nothing in core/.
+#
+# Every knob is present, but defaults are the SIMPLEST thing that works (AMP auto,
+# no accumulation, no compile, single device, wandb off). Turn knobs on only when
+# the task needs them. A dl-trainer preset overwrites these with the task's
+# gold-standard values; tune from there.
+# ─────────────────────────────────────────────────────────────────────────────
+
+run:
+  # name + output dir are set automatically: name = this experiment folder's name,
+  # outputs go to results/<name>/run_<datetime>/. You only set seed + device here.
+  seed: 42
+  device: auto                   # auto (cuda>mps>cpu) | cpu | mps | cuda:0 ...
+
+logging:
+  wandb: false                   # off by default; set true to log (wandb is installed)
+  project: dl-trainer
+  entity: null                   # your wandb team/user, or null for default
+  mode: online                   # online | offline | disabled
+  tags: []
+
+data:
+  # Point these at your task. data/dataloader.py turns them into Dataset + DataLoader.
+  train_path: null
+  val_path: null
+  batch_size: 64                 # prefer multiples of 8/16 (tensor-core tiles)
+  num_workers: 4
+  pin_memory: true               # only helps with num_workers>0 + CUDA
+  persistent_workers: true
+  drop_last: true                # avoids tiny final batch (noisy BatchNorm)
+  prefetch_factor: 2
+
+model:
+  # Free-form; core/model.py (or your experiment.py build_model) reads this dict.
+  name: mlp
+  in_features: 2
+  hidden: 128
+  out_features: 3
+
+optim:
+  optimizer: adamw               # adamw | adam | sgd
+  lr: 1.0e-3                     # peak LR (after warmup)
+  weight_decay: 0.1              # AdamW decoupled; excluded from bias/norm params
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+  momentum: 0.9                  # sgd only
+  grad_clip_norm: 1.0            # global L2 clip; null to disable
+
+scheduler:
+  name: cosine_warmup            # cosine_warmup | cosine | plateau | none
+  warmup_steps: 100              # ~1-5% of total steps is typical
+  min_lr: 0.0                    # (cosine_warmup steps per optimizer step; others per epoch — set by the scheduler)
+
+train:
+  epochs: 100
+  max_steps: null                # overrides epochs if set
+  sanity_gate: true              # prove setup on one batch before the real run
+  sanity_overfit_steps: 300      # overfit-one-batch iters; lower for very large models
+  amp: true                      # mixed precision (auto-disabled on mps/cpu)
+  amp_dtype: auto                # auto (bf16 if supported, else fp16) | bfloat16 | float16
+  grad_accum_steps: 1            # effective batch = batch_size * grad_accum_steps
+  compile: false                 # torch.compile (PyTorch 2.x); slow first step, then faster
+  ema_decay: 0                   # weight EMA for eval/checkpoint; 0 = off, e.g. 0.9999 (diffusion/GAN/SSL/vision)
+  cudnn_benchmark: true          # set false if input shapes vary between batches
+  resume: true                   # if --resume <run_dir> points at a run with checkpoints/last.pt, continue it
+  log_every: 50                  # steps
+  eval_every: 1                  # epochs
+  eval_every_steps: 0            # >0 = also eval+checkpoint every N steps (iterator/streaming/LLM runs)
+  ckpt_every_steps: 0            # >0 = also save last.pt every N steps (when not eval-ing that often)
+  save_best_on: val_loss         # metric to checkpoint best model against
+  save_best_mode: min            # min for losses, max for accuracy/AUC/etc.
+  ckpt_every: 0                  # epochs; 0 = only best + last, N = also snapshot every N
+
+loss:
+  name: cross_entropy            # see core/optimization.py (cross_entropy | bce_with_logits | mse | ctc)
+  label_smoothing: 0.0
+  class_weights: null
+  ignore_index: -100

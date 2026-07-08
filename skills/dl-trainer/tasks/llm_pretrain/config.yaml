@@ -1,0 +1,40 @@
+# From-scratch GPT pretraining. Classic nanoGPT GPT-2 (124M) baseline.
+_recipe:
+  summary: "GPT-2 124M from-scratch pretraining (nanoGPT baseline)"
+  source: "github.com/karpathy/nanoGPT (config/train_gpt2.py + GPTConfig)"
+  last_verified: 2026-06-25
+  adoption: "nanoGPT ~60k*; the universal from-scratch GPT reference (Karpathy)"
+  extra: llm
+  todo:
+    - "Arch: 12 layers, d_model 768, 12 heads, ctx 1024, vocab 50257 (GPT-2 BPE)."
+    - "Implement build_model in your experiment.py (or clone nanoGPT); weight-tie embeddings; dropout 0.0."
+    - "Modern variant (modded-nanogpt/nanochat): RMSNorm + RoPE + Muon(2D)+AdamW(embed/head)."
+    - "Exclude 1D params (bias, norm) from weight decay (param_groups already does this)."
+
+model:
+  name: gpt
+  n_layer: 12
+  n_embd: 768
+  n_head: 12
+  block_size: 1024
+  vocab_size: 50257
+  dropout: 0.0
+optim:
+  optimizer: adamw
+  lr: 6.0e-4
+  weight_decay: 0.1
+  betas: [0.9, 0.95]   # note 0.95, not 0.999, for LM pretraining
+  eps: 1.0e-8
+  grad_clip_norm: 1.0
+scheduler:
+  name: cosine_warmup
+  warmup_steps: 2000
+  min_lr: 6.0e-5       # peak/10
+train:
+  amp: true
+  amp_dtype: bfloat16
+  grad_accum_steps: 40        # ~0.5M tokens/update per process (micro-batch 12 x ctx 1024 x 40); x8 GPUs => ~3.9M
+  sanity_overfit_steps: 500   # LM overfits a batch slowly at lr 6e-4; the gate needs more steps than the default
+loss:
+  name: cross_entropy
+  label_smoothing: 0.0  # never used for LM pretraining

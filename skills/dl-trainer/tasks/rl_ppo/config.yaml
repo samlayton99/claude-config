@@ -1,0 +1,22 @@
+# Deep RL — PPO. RL is not a supervised loop: at setup, vendor CleanRL's ppo.py INTO core/
+# (port through the harness, don't bypass). This preset documents the canonical PPO config.
+_recipe:
+  summary: "PPO reference config (CleanRL) — vendor ppo.py INTO core/, port not bypass"
+  source: "github.com/vwxyzjn/cleanrl (ppo.py / ppo_atari.py) ; SB3"
+  last_verified: 2026-06-25
+  adoption: "CleanRL ~10k* (JMLR); SB3 ~13.5k* — the correctness references for RL"
+  todo:
+    - "Vendor CleanRL ppo.py INTO core/train.py (update-math byte-identical), env in core/env.py; experiment stays config-only. Verify infos API vs INSTALLED gymnasium (final_info vs episode)."
+    - "Universal: gamma 0.99, gae_lambda 0.95, clip 0.1-0.2, vf_coef 0.5, max_grad_norm 0.5."
+    - "Adam eps=1e-5 (the well-known PPO detail); advantage normalization on; fp32."
+    - "Env-specific: lr 2.5e-4 (Atari) / 3e-4 (continuous); ent_coef 0.01 (discrete)/0.0 (cont)."
+    - "num_steps 128 (Atari) / 2048 (MuJoCo); anneal_lr=True; expect to seed-average."
+
+optim:
+  optimizer: adam
+  lr: 3.0e-4
+  eps: 1.0e-5
+  weight_decay: 0.0
+  grad_clip_norm: 0.5
+train:
+  amp: false            # RL is numerically fragile and tiny-net bound; keep fp32

@@ -1,0 +1,15 @@
+# environment
+.venv/
+__pycache__/
+*.pyc
+
+# outputs (regenerable — never commit)
+results/
+
+# raw data (large — keep the folder, ignore its contents)
+data/raw/*
+!data/raw/.gitkeep
+
+# misc
+.DS_Store
+*.log

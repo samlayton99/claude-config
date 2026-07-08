@@ -1,0 +1,23 @@
+# Self-play — AlphaZero. NOTE: self-play loop, not supervised; use an upstream repo.
+_recipe:
+  summary: "AlphaZero reference config — external repo, not this scaffold's loop"
+  source: "Silver et al. arXiv:1712.01815 ; github.com/suragnair/alpha-zero-general"
+  last_verified: 2026-06-25
+  adoption: "alpha-zero-general ~4.5k* (teaching); KataGo/lc0 = strength engines"
+  todo:
+    - "Self-play + MCTS, no DataLoader — use suragnair/alpha-zero-general (small games)."
+    - "Net: conv stem + 19 residual blocks, 256 filters, separate policy+value heads."
+    - "MCTS: 800 sims/move (paper) or 25 (starter); pb_c_init 1.25, pb_c_base 19652."
+    - "Root Dirichlet noise eps=0.25, alpha ~= 10/avg_legal_moves (0.3 chess/0.03 Go)."
+    - "Temperature tau=1 for first 30 moves, then argmax."
+    - "Loss = MSE(value) + CE(policy), equal weight, + L2 reg."
+
+optim:
+  optimizer: sgd
+  lr: 0.2               # dropped 0.2 -> 0.02 -> 0.002 -> 0.0002 across training
+  momentum: 0.9
+  weight_decay: 1.0e-4
+train:
+  amp: false            # fp32 for net training (fp16 only for self-play inference at scale)
+loss:
+  name: cross_entropy   # policy head; value head uses MSE (handled in the upstream repo)

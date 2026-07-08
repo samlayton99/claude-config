@@ -1,0 +1,22 @@
+# Deep RL — Double DQN. RL is not a supervised loop: at setup, vendor CleanRL's dqn.py INTO
+# core/ and apply the ONE double-DQN change (online net selects the bootstrap action, target
+# net evaluates it). This preset documents the canonical Double DQN config (CleanRL defaults).
+_recipe:
+  summary: "Double DQN reference config (CleanRL dqn.py + van Hasselt 2016 target) — vendor INTO core/, port not bypass"
+  source: "github.com/vwxyzjn/cleanrl (dqn.py) ; van Hasselt et al. 2016 (Deep RL with Double Q-learning, arXiv:1509.06461)"
+  last_verified: 2026-06-28
+  adoption: "CleanRL ~10k* (JMLR), benchmarked DQN; Double DQN ~10k+ citations — the standard value-based baseline"
+  todo:
+    - "Vendor CleanRL dqn.py INTO core/. The ONLY algo change vs DQN: next_action = online_q(next_obs).argmax(); target = r + gamma*(1-done)*target_q(next_obs)[next_action]. Everything else (eps schedule, replay, target sync) is faithful."
+    - "Verify env interface vs INSTALLED gymnasium: >=1.0 uses infos['episode']+_episode (not final_info). A single (non-vector) env doesn't autoreset -> clean replay, no spurious terminal->reset transition."
+    - "Store done = TERMINATION only (truncation/time-limit must still bootstrap)."
+    - "CleanRL classic-control defaults: lr 2.5e-4, buffer 10000, gamma 0.99, tau 1.0 (hard sync), target_network_frequency 500, batch 128, start_e 1.0 -> end_e 0.05 over exploration_fraction 0.5, learning_starts 10000, train_frequency 10, Q-net MLP 120-84."
+    - "Discrete action spaces ONLY. Sparse-reward envs (MountainCar) need longer epsilon + bigger buffer and still fail on some seeds — SEED-AVERAGE."
+
+optim:
+  optimizer: adam
+  lr: 2.5e-4
+  weight_decay: 0.0
+  grad_clip_norm: null    # CleanRL DQN does not clip gradients
+train:
+  amp: false              # RL is numerically fragile and tiny-net bound; keep fp32
