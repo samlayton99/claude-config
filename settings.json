@@ -74,6 +74,7 @@
   },
   "effortLevel": "high",
   "tui": "default",
+  "skipWorkflowUsageWarning": true,
   "theme": "light",
   "preferredNotifChannel": "auto",
   "switchModelsOnFlag": false,
