@@ -9,6 +9,9 @@
 #                         then spawn a headless resolver (sync-resolver.sh).
 #                         Nothing is ever discarded: the stranded branch is the
 #                         permanent undo point for whatever resolution follows.
+# Claudio workers run `claude -p` up to once a minute — never sync from those
+# (constant commits/pushes + stdout noise in worker output). Interactive only.
+[ -n "${CLAUDIO_WORKER:-}" ] && exit 0
 cd "${CLAUDE_SYNC_DIR:-$HOME/.claude}" || exit 0
 [ -n "$CLAUDE_SYNC_RESOLVER" ] && exit 0  # resolver's own SessionEnd: no recursion
 export GIT_TERMINAL_PROMPT=0
