@@ -1,6 +1,9 @@
 #!/bin/bash
 # SessionEnd hook: commit and push any config changes (skill edits, settings).
 # Whitelist .gitignore means only portable config is ever staged.
+# Claudio workers run `claude -p` up to once a minute — never sync from those
+# (constant commits/pushes + stdout noise in worker output). Interactive only.
+[ -n "${CLAUDIO_WORKER:-}" ] && exit 0
 cd "$HOME/.claude" || exit 0
 export GIT_TERMINAL_PROMPT=0
 DEVICE="$(cat "$HOME/.sam-device" 2>/dev/null || hostname -s)"
