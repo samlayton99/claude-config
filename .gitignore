@@ -17,3 +17,6 @@
 **/*.local.*
 **/node_modules/
 
+# dl-trainer is its own repo (samlayton99/dl-trainer) — bootstrap clones it here
+/skills/dl-trainer/
+
