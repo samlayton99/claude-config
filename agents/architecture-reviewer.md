@@ -1,1 +1,0 @@
-/Users/sam/my-repos/projects/tools/codex-config/platforms/claude/agents/architecture-reviewer.md

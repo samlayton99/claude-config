@@ -1,8 +1,9 @@
 # claude-config
 
-Live Claude Code config, synced across all machines. Tier: **large-exact** (see `~/sam-setup`).
+Thin, machine-independent Claude Code config. Tier: **large-exact** (see `~/sam-setup/settings/large-exact/claude.md`).
 
-- Whitelist `.gitignore`: only skills, agents, commands, hooks, CLAUDE.md, settings.json, keybindings, statusline sync. Sessions/caches/credentials never do.
-- Sync: `hooks/session-start-pull.sh` pulls at session start; `hooks/session-end-push.sh` commits+pushes at session end. No manual git needed.
-- New machine: `git clone git@github.com:samlayton99/claude-config.git ~/.claude` (bootstrap does this).
-- Rule: no secrets, no binaries, no file >1MB.
+- Tracked: `CLAUDE.md` (two `@import` lines into the shared context repo), `keybindings.json`, `statusline-command.sh`. Identical on every machine by design.
+- Not tracked, on purpose: `settings.json` (machine-specific; sam-setup captures it per device), `skills/`, `agents/`, `commands/` (symlinks that `codex-config/bin/install-context` regenerates), sessions, caches, credentials, auto-memory (machine-local by Sam's decision, 2026-09-15).
+- Sync: the daily sam-setup capture fast-forwards this clone and commits+pushes tracked changes; it refuses divergence and reports it. No session hooks.
+- New machine: `git clone git@github.com:samlayton99/claude-config.git ~/.claude`, then `python3 ~/my-repos/projects/tools/codex-config/bin/install-context`.
+- History before 2026-09-15 (the old whole-config layout) is on branches `final-mac-mini-2026` and `final-personal-macbook`.

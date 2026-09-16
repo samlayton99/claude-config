@@ -1,1 +1,0 @@
-/Users/sam/my-repos/projects/tools/codex-config/platforms/claude/agents/doc-implementer.md
